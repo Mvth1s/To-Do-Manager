@@ -34,6 +34,10 @@ const createTask = (): void => {
   newTaskTitle.value = ''
   nextId.value++
 }
+
+const deleteTask = (id: string | number): void => {
+  task.value = task.value.filter((task) => task.id !== id)
+}
 </script>
 
 <template>
