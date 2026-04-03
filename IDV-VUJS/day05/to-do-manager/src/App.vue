@@ -1,11 +1,26 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <Header />
+  <main class="container"></main>
+  <Footer />
 </template>
 
-<style scoped></style>
+<style>
+#app{
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main{
+  flex:1;
+  max-width: 1000px;
+  margin: 2rem auto;
+  width: 100%;
+  padding: 0 1rem;
+}
+</style>
