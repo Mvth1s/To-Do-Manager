@@ -10,6 +10,16 @@ const task = ref<Task[]>([])
 const newTaskTitle = ref<string>('')
 const errorMessage = ref<string>('')
 const nextId = ref<number>(1)
+
+const validateInput = (): boolean => {
+  errorMessage.value = ''
+
+  if (newTaskTitle.value.trim() === '') {
+    errorMessage.value = 'Le titre de la tâche ne peut pas être vide'
+    return false
+  }
+  return true
+}
 </script>
 
 <template>
