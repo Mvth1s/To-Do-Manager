@@ -38,6 +38,13 @@ const createTask = (): void => {
 const deleteTask = (id: string | number): void => {
   task.value = task.value.filter((task) => task.id !== id)
 }
+
+const updateTaskStatus = (id: string | number, newStatus: Status): void => {
+  const task = tasks.value.find((task) => task.id === id)
+  if (task) {
+    task.status = newStatus
+  }
+}
 </script>
 
 <template>
