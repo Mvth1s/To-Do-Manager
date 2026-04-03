@@ -20,6 +20,20 @@ const validateInput = (): boolean => {
   }
   return true
 }
+
+const createTask = (): void => {
+  if (!validateInput()) return
+
+  const task: Task = {
+    id: nextId.value,
+    title: newTaskTitle.value.trim(),
+    status: Status.TODO,
+  }
+
+  task.value.push(task)
+  newTaskTitle.value = ''
+  nextId.value++
+}
 </script>
 
 <template>
