@@ -2,11 +2,11 @@
 import type { Task } from '@/types/Task.ts'
 import TaskItem from '@/components/TaskItem.vue'
 
-defineProps < {
-  task: Task[]
+defineProps<{
+  tasks: Task[]
 }>()
 
-defineEmits < {
+defineEmits<{
   updateStatus: [id: string | number, status: string]
   deleteTask: [id: string | number]
 }>()
@@ -14,7 +14,7 @@ defineEmits < {
 
 <template>
   <div class="task-list">
-    <h2>Tes Tâches ({{tasks.length}}</h2>
+    <h2>Tes Tâches ({{tasks.length}})</h2>
 
     <div v-if="tasks.length === 0" class="empty-state">
       <p>Pas de tâches pour le moment. Crées-en une pour commencer !</p>
@@ -23,7 +23,7 @@ defineEmits < {
     <div v-else>
       <TaskItem
       v-for="task in tasks"
-      :key"task.id"
+      :key="task.id"
       :task="task"
       @updateStatus="(status) => $emit('updateStatus', task.id, status)"
       @deleteTask="$emit('deleteTask', task.id)"

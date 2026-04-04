@@ -6,7 +6,7 @@ import { ref, onMounted } from 'vue'
 import type { Task } from '@/types/Task'
 import { Status } from '@/types/Task'
 
-const task = ref<Task[]>([])
+const tasks = ref<Task[]>([])
 const newTaskTitle = ref<string>('')
 const errorMessage = ref<string>('')
 const nextId = ref<number>(1)
@@ -40,29 +40,29 @@ const createTask = (): void => {
 
 const deleteTask = (id: string | number): void => {
   tasks.value = tasks.value.filter((task) => task.id !== id)
-  saveTask()
+  saveTasks()
 }
 
 const updateTaskStatus = (id: string | number, newStatus: string): void => {
   const task = tasks.value.find((task) => task.id === id)
   if (task) {
     task.status = newStatus
-    saveTask()
+    saveTasks()
   }
 }
 
 const saveTasks = (): void => {
-  localStorage.setItems(STORAGE_KEY, JSON.stringify(tasks.value))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks.value))
 }
 
-const loadTask = (): void => {
+const loadTasks = (): void => {
   const saved = localStorage.getItem(STORAGE_KEY)
   if (saved) {
     try {
-      task.value = JSON.parse(saved)
+      tasks.value = JSON.parse(saved)
       // Mets à jour nextId basé sur les tâches existantes
       if (tasks.value.length > 0) {
-        const maxId = Math.max(...task.value.map((t) => (typeof t.id === 'number' ? t.id : 0)))
+        const maxId = Math.max(...tasks.value.map((t) => (typeof t.id === 'number' ? t.id : 0)))
         nextId.value = maxId + 1
       }
     } catch (e) {
@@ -79,8 +79,8 @@ onMounted(() => {
 <template>
   <Header />
   <main class="container">
-    <TaskFrom :newTaskTitle="newTaskTitle" :errorMessage="errorMessage" @createTask="createTask" />
-    <TaskList :task="tasks" @updateStatus="updateTaskStatus" @deleteTask="deleteTask" />
+    <TaskForm :newTaskTitle="newTaskTitle" :errorMessage="errorMessage" @createTask="createTask" />
+    <TaskList :tasks="tasks" @updateStatus="updateTaskStatus" @deleteTask="deleteTask" />
   </main>
   <Footer />
 </template>

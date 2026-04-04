@@ -18,7 +18,7 @@ defineEmits<{
         <label for="title">Titre de la tâche</label>
         <input
           id="title"
-          v-model="nextaskTitle"
+          v-model="nextTaskTitle"
           type="text"
           placeholder="Entre ta tâche..."
           class="input"
