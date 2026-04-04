@@ -5,14 +5,14 @@ defineProps<{
   errorMessage: string
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   createTask: [title: string]
 }>()
 
 const inputTitle = ref<string>('')
 
 const handleSubmit = () => {
-  $emit('createTask', inputTitle.value)
+  emit('createTask', inputTitle.value)
   inputTitle.value=''
 }
 </script>
