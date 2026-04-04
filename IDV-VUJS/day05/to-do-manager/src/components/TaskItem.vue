@@ -28,8 +28,8 @@ defineEmits<{
       </button>
 
       <button
-        v-if="task.status !== 'doing'"
-        @click="$emit('updateStatus', 'doing')"
+        v-if="task.status !== 'in progress'"
+        @click="$emit('updateStatus', 'in progress')"
         class="btn btn-small"
       >
         En cours
@@ -62,7 +62,7 @@ defineEmits<{
 .task-item.task-to\ do {
   border-left: 4px solid #95a5a6;
 }
-.task-item.task-doing {
+.task-item.task-in\ progress {
   border-left: 4px solid #f39c12;
 }
 .task-item.task-done {
@@ -94,7 +94,7 @@ h3 {
   background: #ecf0f1;
   color: #7f8c8d;
 }
-.status-doing {
+.status-in\ progress {
   background: #fef3c7;
   color: #d97706;
 }

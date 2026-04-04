@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
+import AppHeader from '@/components/AppHeader.vue'
+import AppFooter from '@/components/AppFooter.vue'
 import TaskForm from '@/components/TaskForm.vue'
 import TaskList from '@/components/TaskList.vue'
 
@@ -49,7 +49,7 @@ const deleteTask = (id: string | number): void => {
 const updateTaskStatus = (id: string | number, newStatus: string): void => {
   const task = tasks.value.find((task) => task.id === id)
   if (task) {
-    task.status = newStatus
+    task.status = newStatus as Status
     saveTasks()
   }
 }
@@ -80,12 +80,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <Header />
+  <AppHeader />
   <main class="container">
     <TaskForm :errorMessage="errorMessage" @createTask="createTask" />
     <TaskList :tasks="tasks" @updateStatus="updateTaskStatus" @deleteTask="deleteTask" />
   </main>
-  <Footer />
+  <AppFooter />
 </template>
 
 <style>
