@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
+import TaskForm from '@/components/TaskForm.vue'
+import TaskList from '@/components/TaskList.vue'
 
 import { ref, onMounted } from 'vue'
 import type { Task } from '@/types/Task'
