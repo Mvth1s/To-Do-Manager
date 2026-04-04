@@ -86,6 +86,18 @@ onMounted(() => {
 </template>
 
 <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Sego UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #f8f9fa;
+  color: #333;
+}
+
 #app {
   display: flex;
   flex-direction: column;
@@ -98,5 +110,11 @@ main {
   margin: 2rem auto;
   width: 100%;
   padding: 0 1rem;
+}
+
+@media (max-width: 768px){
+  main{
+    margin: 1rem auto;
+  }
 }
 </style>
