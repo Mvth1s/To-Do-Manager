@@ -49,7 +49,9 @@ const updateTaskStatus = (id: string | number, newStatus: Status): void => {
 
 <template>
   <Header />
-  <main class="container"></main>
+  <main class="container">
+    <TaskFrom :newTaskTitle="newTaskTitle" :errorMessage="errorMessage" @createTask="createTask" />
+  </main>
   <Footer />
 </template>
 
