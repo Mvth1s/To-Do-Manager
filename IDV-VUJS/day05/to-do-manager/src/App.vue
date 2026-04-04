@@ -25,7 +25,8 @@ const validateInput = (): boolean => {
   return true
 }
 
-const createTask = (): void => {
+const createTask = (title: string): void => {
+  newTaskTitle.value = title
   if (!validateInput()) return
 
   const task: Task = {
@@ -81,7 +82,7 @@ onMounted(() => {
 <template>
   <Header />
   <main class="container">
-    <TaskForm :newTaskTitle="newTaskTitle" :errorMessage="errorMessage" @createTask="createTask" />
+    <TaskForm :errorMessage="errorMessage" @createTask="createTask" />
     <TaskList :tasks="tasks" @updateStatus="updateTaskStatus" @deleteTask="deleteTask" />
   </main>
   <Footer />

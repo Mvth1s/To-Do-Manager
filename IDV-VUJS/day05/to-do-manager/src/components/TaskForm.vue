@@ -1,24 +1,32 @@
 <script setup lang="ts">
+import {ref} from 'vue'
+
 defineProps<{
-  newTaskTitle: string
   errorMessage: string
 }>()
 
 defineEmits<{
-  createTask: []
+  createTask: [title: string]
 }>()
+
+const inputTitle = ref<string>('')
+
+const handleSubmit = () => {
+  $emit('createTask', inputTitle.value)
+  inputTitle.value=''
+}
 </script>
 
 <template>
   <div class="task-form">
     <h2>Créer une nouvelle tâche</h2>
 
-    <form @submit.prevent="createTask">
+    <form @submit.prevent="handleSubmit">
       <div class="form-group">
         <label for="title">Titre de la tâche</label>
         <input
           id="title"
-          v-model="nextTaskTitle"
+          v-model="inputTitle"
           type="text"
           placeholder="Entre ta tâche..."
           class="input"
@@ -88,8 +96,12 @@ label {
   transition: all 0.3s ease;
 }
 
-.btn-primary {
-  transform: translateY(-2px);
+.btn-primary{
+  background: #667eea;
+  color: white;
+}
+.btn-primary:hover {
+  background: #5568d3;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 </style>
