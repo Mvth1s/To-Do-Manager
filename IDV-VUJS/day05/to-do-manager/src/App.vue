@@ -96,7 +96,8 @@ onMounted(() => {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Sego UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Sego UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background: #f8f9fa;
   color: #333;
 }
@@ -115,8 +116,8 @@ main {
   padding: 0 1rem;
 }
 
-@media (max-width: 768px){
-  main{
+@media (max-width: 768px) {
+  main {
     margin: 1rem auto;
   }
 }

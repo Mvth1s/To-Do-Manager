@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import { ref } from 'vue'
 
 defineProps<{
   errorMessage: string
@@ -13,7 +13,7 @@ const inputTitle = ref<string>('')
 
 const handleSubmit = () => {
   emit('createTask', inputTitle.value)
-  inputTitle.value=''
+  inputTitle.value = ''
 }
 </script>
 
@@ -96,7 +96,7 @@ label {
   transition: all 0.3s ease;
 }
 
-.btn-primary{
+.btn-primary {
   background: #667eea;
   color: white;
 }
