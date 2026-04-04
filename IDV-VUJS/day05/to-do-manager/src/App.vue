@@ -2,7 +2,7 @@
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { Task } from '@/types/Task'
 import { Status } from '@/types/Task'
 
@@ -10,6 +10,8 @@ const task = ref<Task[]>([])
 const newTaskTitle = ref<string>('')
 const errorMessage = ref<string>('')
 const nextId = ref<number>(1)
+
+const STORAGE_KEY = 'tasks'
 
 const validateInput = (): boolean => {
   errorMessage.value = ''
@@ -30,21 +32,48 @@ const createTask = (): void => {
     status: Status.TODO,
   }
 
-  task.value.push(task)
+  tasks.value.push(task)
+  saveTasks()
   newTaskTitle.value = ''
   nextId.value++
 }
 
 const deleteTask = (id: string | number): void => {
-  task.value = task.value.filter((task) => task.id !== id)
+  tasks.value = tasks.value.filter((task) => task.id !== id)
+  saveTask()
 }
 
-const updateTaskStatus = (id: string | number, newStatus: Status): void => {
+const updateTaskStatus = (id: string | number, newStatus: string): void => {
   const task = tasks.value.find((task) => task.id === id)
   if (task) {
     task.status = newStatus
+    saveTask()
   }
 }
+
+const saveTasks = (): void => {
+  localStorage.setItems(STORAGE_KEY, JSON.stringify(tasks.value))
+}
+
+const loadTask = (): void => {
+  const saved = localStorage.getItem(STORAGE_KEY)
+  if (saved) {
+    try {
+      task.value = JSON.parse(saved)
+      // Mets à jour nextId basé sur les tâches existantes
+      if (tasks.value.length > 0) {
+        const maxId = Math.max(...task.value.map((t) => (typeof t.id === 'number' ? t.id : 0)))
+        nextId.value = maxId + 1
+      }
+    } catch (e) {
+      console.error('Erreur lors du chargement des tâches:', e)
+    }
+  }
+}
+
+onMounted(() => {
+  loadTasks()
+})
 </script>
 
 <template>
