@@ -51,6 +51,7 @@ const updateTaskStatus = (id: string | number, newStatus: Status): void => {
   <Header />
   <main class="container">
     <TaskFrom :newTaskTitle="newTaskTitle" :errorMessage="errorMessage" @createTask="createTask" />
+    <TaskList :task="tasks" @updateStatus="updateTaskStatus" @deleteTask="deleteTask" />
   </main>
   <Footer />
 </template>
