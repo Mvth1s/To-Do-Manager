@@ -156,33 +156,45 @@ onUnmounted(() => {
   <AppHeader />
   <main class="container">
     <div class="task-list-header">
-      <button @click="openCreateModal" class="btn btn-primary btn-create">
+      <button
+        @click="openCreateModal"
+        class="btn btn-primary btn-create"
+        aria-label="Créer une nouvelle tâche"
+      >
         ➕ Créer une nouvelle tâche
       </button>
     </div>
 
-    <div class="filter-buttons">
+    <div class="filter-buttons" role="group" aria-label="Filtrer les tâches par status">
       <button
         @click="selectedFilter = 'all'"
         :class="['filter-btn', { active: selectedFilter === 'all' }]"
+        :aria-pressed="selectedFilter === 'all'"
+        aria-label="Afficher toutes les tâches"
       >
         Toutes les tâches
       </button>
       <button
         @click="selectedFilter = Status.TODO"
         :class="['filter-btn', { active: selectedFilter === Status.TODO }]"
+        :aria-pressed="selectedFilter === Status.TODO"
+        aria-label="Afficher les tâches à faire"
       >
         À faire
       </button>
       <button
         @click="selectedFilter = Status.IN_PROGRESS"
         :class="['filter-btn', { active: selectedFilter === Status.IN_PROGRESS }]"
+        :aria-pressed="selectedFilter === Status.IN_PROGRESS"
+        aria-label="Afficher les tâches en cours"
       >
         En cours
       </button>
       <button
         @click="selectedFilter = Status.DONE"
         :class="['filter-btn', { active: selectedFilter === Status.DONE }]"
+        :aria-pressed="selectedFilter === Status.DONE"
+        aria-label="Afficher les tâches terminées"
       >
         Terminé
       </button>
@@ -200,12 +212,19 @@ onUnmounted(() => {
   </main>
 
   <!-- Modal Overlay -->
-  <div v-if="showFormModal" class="modal-overlay" @click="closeModal"></div>
+  <div v-if="showFormModal" class="modal-overlay" @click="closeModal" aria-hidden="true"></div>
 
   <!-- Modal -->
-  <div v-if="showFormModal" class="modal" @click.stop>
+  <div
+    v-if="showFormModal"
+    class="modal"
+    @click.stop
+    role="dialog"
+    aria-modal="true"
+    :aria-labelledby="editingTask ? 'modal-edit-title' : 'modal-create-title'"
+  >
     <div class="modal-content">
-      <button class="modal-close" @click="closeModal">✕</button>
+      <button class="modal-close" @click="closeModal" aria-label="Fermer le formulaire">✕</button>
       <TaskForm :errorMessage="errorMessage" :editingTask="editingTask" @createTask="createTask" />
     </div>
   </div>

@@ -78,9 +78,11 @@ const toggleSubtask = (index: number) => {
 
 <template>
   <div class="task-form">
-    <h2>{{ props.editingTask ? 'Modifier la tâche' : 'Créer une nouvelle tâche' }}</h2>
+    <h2 :id="props.editingTask ? 'modal-edit-title' : 'modal-create-title'">
+      {{ props.editingTask ? 'Modifier la tâche' : 'Créer une nouvelle tâche' }}
+    </h2>
 
-    <form @submit.prevent="handleSubmit">
+    <form @submit.prevent="handleSubmit" aria-label="Formulaire de création/modification de tâche">
       <div class="form-group">
         <label for="title">Titre de la tâche *</label>
         <input
@@ -90,6 +92,9 @@ const toggleSubtask = (index: number) => {
           placeholder="Entre ta tâche..."
           class="input"
           required
+          aria-required="true"
+          :aria-invalid="errorMessage ? 'true' : 'false'"
+          :aria-describedby="errorMessage ? 'error-message' : undefined"
         />
       </div>
 
@@ -101,39 +106,68 @@ const toggleSubtask = (index: number) => {
           placeholder="Ajoute des détails (optionnel)..."
           class="input textarea"
           rows="3"
+          aria-label="Description optionnelle de la tâche"
         ></textarea>
       </div>
 
       <div class="form-group">
-        <label>Sous-tâches</label>
+        <label for="new-subtask">Sous-tâches</label>
         <div class="subtask-input-group">
           <input
+            id="new-subtask"
             v-model="newSubtaskTitle"
             type="text"
             placeholder="Ajoute une sous-tâche..."
             class="input"
             @keyup.enter="addSubtask"
+            aria-label="Champ pour ajouter une nouvelle sous-tâche"
           />
-          <button type="button" @click="addSubtask" class="btn btn-secondary">Ajouter</button>
+          <button
+            type="button"
+            @click="addSubtask"
+            class="btn btn-secondary"
+            aria-label="Ajouter une sous-tâche à la liste"
+          >
+            Ajouter
+          </button>
         </div>
 
-        <div v-if="subtasks.length > 0" class="subtasks-list">
-          <div v-for="(subtask, index) in subtasks" :key="index" class="subtask-item">
+        <div v-if="subtasks.length > 0" class="subtasks-list" role="list">
+          <div
+            v-for="(subtask, index) in subtasks"
+            :key="index"
+            class="subtask-item"
+            role="listitem"
+          >
             <input
               type="checkbox"
               :checked="subtask.completed"
               @change="toggleSubtask(index)"
               class="checkbox"
+              :aria-label="`Marquer '${subtask.title}' comme ${subtask.completed ? 'incomplète' : 'complète'}`"
             />
             <span :class="{ completed: subtask.completed }">{{ subtask.title }}</span>
-            <button type="button" @click="removeSubtask(index)" class="btn btn-small btn-danger">
+            <button
+              type="button"
+              @click="removeSubtask(index)"
+              class="btn btn-small btn-danger"
+              :aria-label="`Supprimer la sous-tâche '${subtask.title}'`"
+            >
               ✕
             </button>
           </div>
         </div>
       </div>
 
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <div
+        v-if="errorMessage"
+        id="error-message"
+        class="error-message"
+        role="alert"
+        aria-live="polite"
+      >
+        {{ errorMessage }}
+      </div>
 
       <button type="submit" class="btn btn-primary">
         {{ props.editingTask ? 'Mettre à jour' : 'Ajouter une Tâche' }}

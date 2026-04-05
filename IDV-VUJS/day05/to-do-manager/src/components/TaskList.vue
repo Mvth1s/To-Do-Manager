@@ -17,18 +17,19 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="task-list">
+  <div class="task-list" role="region" aria-label="Liste de vos tâches">
     <h2>Tes Tâches ({{ tasks.length }})</h2>
 
-    <div v-if="tasks.length === 0" class="empty-state">
+    <div v-if="tasks.length === 0" class="empty-state" aria-live="polite">
       <p>Pas de tâches pour le moment. Crées-en une pour commencer !</p>
     </div>
 
-    <div v-else>
+    <div v-else role="list" aria-label="Tâches à gérer">
       <TaskItem
         v-for="task in tasks"
         :key="task.id"
         :task="task"
+        role="listitem"
         @updateStatus="(status) => $emit('updateStatus', task.id, status)"
         @deleteTask="$emit('deleteTask', task.id)"
         @editTask="(t) => $emit('editTask', t)"

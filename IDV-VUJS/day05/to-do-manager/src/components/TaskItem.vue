@@ -46,36 +46,61 @@ const cancelEditingSubtask = () => {
 </script>
 
 <template>
-  <div class="task-item" :class="`task-${task.status}`">
+  <div
+    class="task-item"
+    :class="`task-${task.status}`"
+    role="article"
+    :aria-label="`Tâche: ${task.title}, Statut: ${task.status}`"
+  >
     <div class="task-header">
       <h3>{{ task.title }}</h3>
-      <span class="task-status" :class="`status-${task.status}`">{{ task.status }}</span>
+      <span
+        class="task-status"
+        :class="`status-${task.status}`"
+        aria-label="`Statut: ${task.status}`"
+        >{{ task.status }}</span
+      >
     </div>
 
     <div v-if="task.description" class="task-description">
       {{ task.description }}
     </div>
 
-    <div v-if="task.subtasks && task.subtasks.length > 0" class="subtasks-section">
+    <div
+      v-if="task.subtasks && task.subtasks.length > 0"
+      class="subtasks-section"
+      role="region"
+      aria-label="Sous-tâches"
+    >
       <div class="subtasks-header">
         <h4>Sous-tâches ({{ completionPercent }}%)</h4>
-        <div class="progress-bar">
+        <div
+          class="progress-bar"
+          role="progressbar"
+          :aria-valuenow="completionPercent"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          :aria-label="`Progression: ${completionPercent}%`"
+        >
           <div class="progress-fill" :style="{ width: completionPercent + '%' }"></div>
         </div>
       </div>
 
-      <div class="subtasks-list">
+      <div class="subtasks-list" role="list">
         <div
           v-for="(subtask, index) in task.subtasks"
           :key="index"
           class="subtask-row"
           :class="{ completed: subtask.completed }"
+          role="listitem"
         >
           <input
             type="checkbox"
             :checked="subtask.completed"
             @change="emit('toggleSubtask', index)"
             class="subtask-checkbox"
+            :aria-label="`Marquer '${subtask.title}' comme ${subtask.completed ? 'incomplète' : 'complète'}`"
+            :aria-checked="subtask.completed"
           />
 
           <div v-if="editingSubtaskIndex === index" class="subtask-edit">
@@ -86,9 +111,22 @@ const cancelEditingSubtask = () => {
               @keyup.enter="saveSubtaskEdit(index)"
               @keyup.escape="cancelEditingSubtask"
               autofocus
+              aria-label="Champ d'édition de la sous-tâche"
             />
-            <button @click="saveSubtaskEdit(index)" class="btn btn-small btn-success">✓</button>
-            <button @click="cancelEditingSubtask" class="btn btn-small btn-secondary">✕</button>
+            <button
+              @click="saveSubtaskEdit(index)"
+              class="btn btn-small btn-success"
+              aria-label="Confirmer la modification"
+            >
+              ✓
+            </button>
+            <button
+              @click="cancelEditingSubtask"
+              class="btn btn-small btn-secondary"
+              aria-label="Annuler la modification"
+            >
+              ✕
+            </button>
           </div>
 
           <span v-else class="subtask-title">{{ subtask.title }}</span>
@@ -97,14 +135,14 @@ const cancelEditingSubtask = () => {
             <button
               @click="startEditingSubtask(index)"
               class="btn btn-small btn-edit"
-              title="Modifier"
+              :aria-label="`Modifier la sous-tâche '${subtask.title}'`"
             >
               ✎
             </button>
             <button
               @click="emit('deleteSubtask', index)"
               class="btn btn-small btn-danger"
-              title="Supprimer"
+              :aria-label="`Supprimer la sous-tâche '${subtask.title}'`"
             >
               ✕
             </button>
@@ -113,11 +151,12 @@ const cancelEditingSubtask = () => {
       </div>
     </div>
 
-    <div class="task-actions">
+    <div class="task-actions" role="group" aria-label="Actions pour cette tâche">
       <button
         v-if="task.status !== 'to do'"
         @click="emit('updateStatus', 'to do')"
         class="btn btn-small"
+        aria-label="Marquer comme à faire"
       >
         A faire
       </button>
@@ -126,6 +165,7 @@ const cancelEditingSubtask = () => {
         v-if="task.status !== 'in progress'"
         @click="emit('updateStatus', 'in progress')"
         class="btn btn-small"
+        aria-label="Marquer comme en cours"
       >
         En cours
       </button>
@@ -134,13 +174,26 @@ const cancelEditingSubtask = () => {
         v-if="task.status !== 'done'"
         @click="emit('updateStatus', 'done')"
         class="btn btn-small"
+        aria-label="Marquer comme terminé"
       >
         Terminé
       </button>
 
-      <button @click="emit('editTask', task)" class="btn btn-small btn-edit">Modifier</button>
+      <button
+        @click="emit('editTask', task)"
+        class="btn btn-small btn-edit"
+        :aria-label="`Modifier la tâche '${task.title}'`"
+      >
+        Modifier
+      </button>
 
-      <button @click="emit('deleteTask')" class="btn btn-small btn-danger">Supprimer</button>
+      <button
+        @click="emit('deleteTask')"
+        class="btn btn-small btn-danger"
+        :aria-label="`Supprimer la tâche '${task.title}'`"
+      >
+        Supprimer
+      </button>
     </div>
   </div>
 </template>
