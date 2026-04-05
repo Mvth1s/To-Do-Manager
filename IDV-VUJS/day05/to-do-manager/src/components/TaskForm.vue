@@ -124,16 +124,18 @@ const toggleSubtask = (index: number) => {
 
 <style>
 .task-form {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  margin-bottom: 0;
 }
 
 h2 {
   margin-top: 0;
+  margin-bottom: 1.5rem;
   color: #333;
+  font-size: 1.5rem;
 }
 
 .form-group {
@@ -238,6 +240,9 @@ label {
   background: #667eea;
   color: white;
   width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .btn-primary:hover {
