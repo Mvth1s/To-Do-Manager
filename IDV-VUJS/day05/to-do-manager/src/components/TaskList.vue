@@ -2,6 +2,7 @@
 import type { Task } from '@/types/Task.ts'
 import TaskItem from '@/components/TaskItem.vue'
 
+// Reçoit les tâches à afficher et les événements pour les modifier
 defineProps<{
   tasks: Task[]
 }>()

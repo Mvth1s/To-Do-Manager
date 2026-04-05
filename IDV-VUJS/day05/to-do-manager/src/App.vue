@@ -41,11 +41,12 @@ const validateInput = (title: string): boolean => {
   return true
 }
 
+// Crée une nouvelle tâche ou modifie une existante
 const createTask = (taskData: Omit<Task, 'id' | 'status'>): void => {
   if (!validateInput(taskData.title)) return
 
   if (editingTask.value) {
-    // Mode édition
+    // On modifie une tâche existante
     const taskToUpdate = tasks.value.find((task) => task.id === editingTask.value!.id)
     if (taskToUpdate) {
       taskToUpdate.title = taskData.title
@@ -55,7 +56,7 @@ const createTask = (taskData: Omit<Task, 'id' | 'status'>): void => {
     }
     editingTask.value = null
   } else {
-    // Mode création
+    // On crée une nouvelle tâche
     const task: Task = {
       id: nextId.value,
       ...taskData,
@@ -98,6 +99,7 @@ const updateTaskStatus = (id: string | number, newStatus: string): void => {
   }
 }
 
+// Marquer une sous-tâche comme faite ou non faite
 const toggleSubtask = (taskId: string | number, subtaskIndex: number): void => {
   const task = tasks.value.find((task) => task.id === taskId)
   if (task && task.subtasks && task.subtasks[subtaskIndex]) {
@@ -106,6 +108,7 @@ const toggleSubtask = (taskId: string | number, subtaskIndex: number): void => {
   }
 }
 
+// Change le titre d'une sous-tâche
 const updateSubtask = (taskId: string | number, subtaskIndex: number, newTitle: string): void => {
   const task = tasks.value.find((task) => task.id === taskId)
   if (task && task.subtasks && task.subtasks[subtaskIndex]) {
@@ -114,6 +117,7 @@ const updateSubtask = (taskId: string | number, subtaskIndex: number, newTitle: 
   }
 }
 
+// Supprime une sous-tâche
 const deleteSubtask = (taskId: string | number, subtaskIndex: number): void => {
   const task = tasks.value.find((task) => task.id === taskId)
   if (task && task.subtasks) {
@@ -122,16 +126,18 @@ const deleteSubtask = (taskId: string | number, subtaskIndex: number): void => {
   }
 }
 
+// Enregistre les tâches en mémoire du navigateur
 const saveTasks = (): void => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks.value))
 }
 
+// Charge les tâches sauvegardées au démarrage
 const loadTasks = (): void => {
   const saved = localStorage.getItem(STORAGE_KEY)
   if (saved) {
     try {
       tasks.value = JSON.parse(saved)
-      // Mets à jour nextId basé sur les tâches existantes
+      // Trouver le plus grand ID pour éviter les doublons lors de la création
       if (tasks.value.length > 0) {
         const maxId = Math.max(...tasks.value.map((t) => (typeof t.id === 'number' ? t.id : 0)))
         nextId.value = maxId + 1

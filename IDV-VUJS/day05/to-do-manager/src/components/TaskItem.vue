@@ -18,12 +18,14 @@ const emit = defineEmits<{
 const editingSubtaskIndex = ref<number | null>(null)
 const editingSubtaskTitle = ref<string>('')
 
+// Calcule le pourcentage de sous-tâches terminées
 const completionPercent = computed(() => {
   if (!task.subtasks || task.subtasks.length === 0) return 0
   const completed = task.subtasks.filter((s: Subtask) => s.completed).length
   return Math.round((completed / task.subtasks.length) * 100)
 })
 
+// Prépare l'édition d'une sous-tâche en chargeant ses infos
 const startEditingSubtask = (index: number) => {
   if (task.subtasks && task.subtasks[index]) {
     editingSubtaskIndex.value = index
@@ -31,6 +33,7 @@ const startEditingSubtask = (index: number) => {
   }
 }
 
+// Enregistre les modifications et ferme l'édition
 const saveSubtaskEdit = (index: number) => {
   if (editingSubtaskTitle.value.trim()) {
     emit('updateSubtask', index, editingSubtaskTitle.value)
@@ -39,6 +42,7 @@ const saveSubtaskEdit = (index: number) => {
   editingSubtaskTitle.value = ''
 }
 
+// Annule l'édition sans enregistrer les modifications
 const cancelEditingSubtask = () => {
   editingSubtaskIndex.value = null
   editingSubtaskTitle.value = ''

@@ -16,6 +16,7 @@ const inputDescription = ref<string>('')
 const subtasks = ref<Subtask[]>([])
 const newSubtaskTitle = ref<string>('')
 
+// Vide tous les champs du formulaire
 const resetForm = () => {
   inputTitle.value = ''
   inputDescription.value = ''
@@ -23,20 +24,24 @@ const resetForm = () => {
   newSubtaskTitle.value = ''
 }
 
+// Remplit le formulaire quand on modifie une tâche, sinon le vide pour en créer une nouvelle
 watch(
   () => props.editingTask,
   (newVal) => {
     if (newVal) {
+      // On a une tâche à modifier : affiche ses infos
       inputTitle.value = newVal.title
       inputDescription.value = newVal.description || ''
       subtasks.value = newVal.subtasks ? [...newVal.subtasks] : []
     } else {
+      // Pas de tâche : prépare un formulaire vide
       resetForm()
     }
   },
   { immediate: true },
 )
 
+// Envoie les données du formulaire pour créer ou modifier une tâche
 const handleSubmit = () => {
   const task: Omit<Task, 'id' | 'status'> = {
     title: inputTitle.value,
@@ -54,6 +59,7 @@ const handleSubmit = () => {
   resetForm()
 }
 
+// Ajoute une nouvelle sous-tâche à la liste
 const addSubtask = () => {
   if (newSubtaskTitle.value.trim()) {
     subtasks.value.push({
@@ -65,10 +71,12 @@ const addSubtask = () => {
   }
 }
 
+// Supprime une sous-tâche
 const removeSubtask = (index: number) => {
   subtasks.value.splice(index, 1)
 }
 
+// Marque une sous-tâche comme faite ou non faite
 const toggleSubtask = (index: number) => {
   if (subtasks.value[index]) {
     subtasks.value[index].completed = !subtasks.value[index].completed
