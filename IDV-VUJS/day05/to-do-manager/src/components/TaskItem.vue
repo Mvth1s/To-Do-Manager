@@ -1,14 +1,47 @@
 <script setup lang="ts">
-import type { Task } from '@/types/Task.ts'
+import { ref, computed } from 'vue'
+import type { Task, Subtask } from '@/types/Task'
 
-defineProps<{
+const { task } = defineProps<{
   task: Task
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   updateStatus: [status: string]
   deleteTask: []
+  toggleSubtask: [subtaskIndex: number]
+  updateSubtask: [subtaskIndex: number, newTitle: string]
+  deleteSubtask: [subtaskIndex: number]
 }>()
+
+const editingSubtaskIndex = ref<number | null>(null)
+const editingSubtaskTitle = ref<string>('')
+
+const completionPercent = computed(() => {
+  if (!task.subtasks || task.subtasks.length === 0) return 0
+  const completed = task.subtasks.filter((s: Subtask) => s.completed).length
+  return Math.round((completed / task.subtasks.length) * 100)
+})
+
+const startEditingSubtask = (index: number) => {
+  if (task.subtasks && task.subtasks[index]) {
+    editingSubtaskIndex.value = index
+    editingSubtaskTitle.value = task.subtasks[index].title
+  }
+}
+
+const saveSubtaskEdit = (index: number) => {
+  if (editingSubtaskTitle.value.trim()) {
+    emit('updateSubtask', index, editingSubtaskTitle.value)
+  }
+  editingSubtaskIndex.value = null
+  editingSubtaskTitle.value = ''
+}
+
+const cancelEditingSubtask = () => {
+  editingSubtaskIndex.value = null
+  editingSubtaskTitle.value = ''
+}
 </script>
 
 <template>
@@ -18,10 +51,71 @@ defineEmits<{
       <span class="task-status" :class="`status-${task.status}`">{{ task.status }}</span>
     </div>
 
+    <div v-if="task.description" class="task-description">
+      {{ task.description }}
+    </div>
+
+    <div v-if="task.subtasks && task.subtasks.length > 0" class="subtasks-section">
+      <div class="subtasks-header">
+        <h4>Sous-tâches ({{ completionPercent }}%)</h4>
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: completionPercent + '%' }"></div>
+        </div>
+      </div>
+
+      <div class="subtasks-list">
+        <div
+          v-for="(subtask, index) in task.subtasks"
+          :key="index"
+          class="subtask-row"
+          :class="{ completed: subtask.completed }"
+        >
+          <input
+            type="checkbox"
+            :checked="subtask.completed"
+            @change="emit('toggleSubtask', index)"
+            class="subtask-checkbox"
+          />
+
+          <div v-if="editingSubtaskIndex === index" class="subtask-edit">
+            <input
+              v-model="editingSubtaskTitle"
+              type="text"
+              class="subtask-input"
+              @keyup.enter="saveSubtaskEdit(index)"
+              @keyup.escape="cancelEditingSubtask"
+              autofocus
+            />
+            <button @click="saveSubtaskEdit(index)" class="btn btn-small btn-success">✓</button>
+            <button @click="cancelEditingSubtask" class="btn btn-small btn-secondary">✕</button>
+          </div>
+
+          <span v-else class="subtask-title">{{ subtask.title }}</span>
+
+          <div v-if="editingSubtaskIndex !== index" class="subtask-actions">
+            <button
+              @click="startEditingSubtask(index)"
+              class="btn btn-small btn-edit"
+              title="Modifier"
+            >
+              ✎
+            </button>
+            <button
+              @click="emit('deleteSubtask', index)"
+              class="btn btn-small btn-danger"
+              title="Supprimer"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="task-actions">
       <button
         v-if="task.status !== 'to do'"
-        @click="$emit('updateStatus', 'to do')"
+        @click="emit('updateStatus', 'to do')"
         class="btn btn-small"
       >
         A faire
@@ -29,7 +123,7 @@ defineEmits<{
 
       <button
         v-if="task.status !== 'in progress'"
-        @click="$emit('updateStatus', 'in progress')"
+        @click="emit('updateStatus', 'in progress')"
         class="btn btn-small"
       >
         En cours
@@ -37,18 +131,18 @@ defineEmits<{
 
       <button
         v-if="task.status !== 'done'"
-        @click="$emit('updateStatus', 'done')"
+        @click="emit('updateStatus', 'done')"
         class="btn btn-small"
       >
         Terminé
       </button>
 
-      <button @click="$emit('deleteTask')" class="btn btn-small btn-danger">Supprimer</button>
+      <button @click="emit('deleteTask')" class="btn btn-small btn-danger">Supprimer</button>
     </div>
   </div>
 </template>
 
-<style>
+<style scoped>
 .task-item {
   padding: 1rem;
   border: 1px solid #ddd;
@@ -56,15 +150,19 @@ defineEmits<{
   margin-bottom: 1rem;
   transition: all 0.3s ease;
 }
+
 .task-item:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
 .task-item.task-to\ do {
   border-left: 4px solid #95a5a6;
 }
+
 .task-item.task-in\ progress {
   border-left: 4px solid #f39c12;
 }
+
 .task-item.task-done {
   border-left: 4px solid #27ae60;
   background: #f0fdf4;
@@ -74,7 +172,7 @@ defineEmits<{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 h3 {
@@ -94,19 +192,136 @@ h3 {
   background: #ecf0f1;
   color: #7f8c8d;
 }
+
 .status-in\ progress {
   background: #fef3c7;
   color: #d97706;
 }
+
 .status-done {
   background: #dcfce7;
   color: #16a34a;
+}
+
+.task-description {
+  background: #f9f9f9;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  border-left: 3px solid #667eea;
+}
+
+.subtasks-section {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 4px;
+}
+
+.subtasks-header {
+  margin-bottom: 1rem;
+}
+
+.subtasks-header h4 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transition: width 0.3s ease;
+}
+
+.subtasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.subtask-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+
+.subtask-row:hover {
+  border-color: #667eea;
+  background: #f9f9ff;
+}
+
+.subtask-row.completed {
+  background: #f0fdf4;
+  border-color: #d1fae5;
+}
+
+.subtask-checkbox {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.subtask-title {
+  flex: 1;
+  word-break: break-word;
+  color: #333;
+}
+
+.subtask-row.completed .subtask-title {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.subtask-edit {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  align-items: center;
+}
+
+.subtask-input {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #667eea;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+.subtask-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.subtask-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
 }
 
 .task-actions {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eee;
 }
 
 .btn {
@@ -117,16 +332,45 @@ h3 {
   font-size: 0.875rem;
   transition: all 0.3s ease;
 }
+
 .btn-small {
   background: #667eea;
   color: white;
+  padding: 0.4rem 0.8rem;
 }
+
 .btn-small:hover {
   background: #5568d3;
 }
+
+.btn-edit {
+  background: #3498db;
+}
+
+.btn-edit:hover {
+  background: #2980b9;
+}
+
+.btn-success {
+  background: #27ae60;
+}
+
+.btn-success:hover {
+  background: #229954;
+}
+
+.btn-secondary {
+  background: #95a5a6;
+}
+
+.btn-secondary:hover {
+  background: #7f8c8d;
+}
+
 .btn-danger {
   background: #e74c3c;
 }
+
 .btn-danger:hover {
   background: #c0392b;
 }
