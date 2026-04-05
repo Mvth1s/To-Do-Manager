@@ -12,12 +12,14 @@ const tasks = ref<Task[]>([])
 const errorMessage = ref<string>('')
 const nextId = ref<number>(1)
 const showFormModal = ref<boolean>(false)
+const editingTask = ref<Task | null>(null)
 
 const STORAGE_KEY = 'tasks'
 
 const handleEscape = (e: KeyboardEvent) => {
   if (e.key === 'Escape') {
     showFormModal.value = false
+    editingTask.value = null
   }
 }
 
@@ -34,16 +36,45 @@ const validateInput = (title: string): boolean => {
 const createTask = (taskData: Omit<Task, 'id' | 'status'>): void => {
   if (!validateInput(taskData.title)) return
 
-  const task: Task = {
-    id: nextId.value,
-    ...taskData,
-    status: Status.TODO,
+  if (editingTask.value) {
+    // Mode édition
+    const taskToUpdate = tasks.value.find((task) => task.id === editingTask.value!.id)
+    if (taskToUpdate) {
+      taskToUpdate.title = taskData.title
+      taskToUpdate.description = taskData.description
+      taskToUpdate.subtasks = taskData.subtasks
+      saveTasks()
+    }
+    editingTask.value = null
+  } else {
+    // Mode création
+    const task: Task = {
+      id: nextId.value,
+      ...taskData,
+      status: Status.TODO,
+    }
+
+    tasks.value.push(task)
+    saveTasks()
+    nextId.value++
   }
 
-  tasks.value.push(task)
-  saveTasks()
-  nextId.value++
   showFormModal.value = false
+}
+
+const startEditTask = (task: Task): void => {
+  editingTask.value = { ...task }
+  showFormModal.value = true
+}
+
+const closeModal = (): void => {
+  showFormModal.value = false
+  editingTask.value = null
+}
+
+const openCreateModal = (): void => {
+  editingTask.value = null
+  showFormModal.value = true
 }
 
 const deleteTask = (id: string | number): void => {
@@ -117,7 +148,7 @@ onUnmounted(() => {
   <AppHeader />
   <main class="container">
     <div class="task-list-header">
-      <button @click="showFormModal = true" class="btn btn-primary btn-create">
+      <button @click="openCreateModal" class="btn btn-primary btn-create">
         ➕ Créer une nouvelle tâche
       </button>
     </div>
@@ -126,6 +157,7 @@ onUnmounted(() => {
       :tasks="tasks"
       @updateStatus="updateTaskStatus"
       @deleteTask="deleteTask"
+      @editTask="startEditTask"
       @toggleSubtask="toggleSubtask"
       @updateSubtask="updateSubtask"
       @deleteSubtask="deleteSubtask"
@@ -133,13 +165,13 @@ onUnmounted(() => {
   </main>
 
   <!-- Modal Overlay -->
-  <div v-if="showFormModal" class="modal-overlay" @click="showFormModal = false"></div>
+  <div v-if="showFormModal" class="modal-overlay" @click="closeModal"></div>
 
   <!-- Modal -->
-  <div v-if="showFormModal" class="modal">
+  <div v-if="showFormModal" class="modal" @click.stop>
     <div class="modal-content">
-      <button class="modal-close" @click="showFormModal = false">✕</button>
-      <TaskForm :errorMessage="errorMessage" @createTask="createTask" />
+      <button class="modal-close" @click="closeModal">✕</button>
+      <TaskForm :errorMessage="errorMessage" :editingTask="editingTask" @createTask="createTask" />
     </div>
   </div>
 

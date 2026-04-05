@@ -9,6 +9,7 @@ const { task } = defineProps<{
 const emit = defineEmits<{
   updateStatus: [status: string]
   deleteTask: []
+  editTask: [task: Task]
   toggleSubtask: [subtaskIndex: number]
   updateSubtask: [subtaskIndex: number, newTitle: string]
   deleteSubtask: [subtaskIndex: number]
@@ -136,6 +137,8 @@ const cancelEditingSubtask = () => {
       >
         Terminé
       </button>
+
+      <button @click="emit('editTask', task)" class="btn btn-small btn-edit">Modifier</button>
 
       <button @click="emit('deleteTask')" class="btn btn-small btn-danger">Supprimer</button>
     </div>

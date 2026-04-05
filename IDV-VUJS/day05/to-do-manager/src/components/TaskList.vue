@@ -9,6 +9,7 @@ defineProps<{
 defineEmits<{
   updateStatus: [id: string | number, status: string]
   deleteTask: [id: string | number]
+  editTask: [task: Task]
   toggleSubtask: [taskId: string | number, subtaskIndex: number]
   updateSubtask: [taskId: string | number, subtaskIndex: number, newTitle: string]
   deleteSubtask: [taskId: string | number, subtaskIndex: number]
@@ -30,6 +31,7 @@ defineEmits<{
         :task="task"
         @updateStatus="(status) => $emit('updateStatus', task.id, status)"
         @deleteTask="$emit('deleteTask', task.id)"
+        @editTask="(t) => $emit('editTask', t)"
         @toggleSubtask="(subtaskIndex) => $emit('toggleSubtask', task.id, subtaskIndex)"
         @updateSubtask="
           (subtaskIndex, newTitle) => $emit('updateSubtask', task.id, subtaskIndex, newTitle)

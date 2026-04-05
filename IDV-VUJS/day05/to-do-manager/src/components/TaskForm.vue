@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { Task, Subtask } from '@/types/Task'
 
-defineProps<{
+const props = defineProps<{
   errorMessage: string
+  editingTask?: Task | null
 }>()
 
 const emit = defineEmits<{
@@ -14,6 +15,27 @@ const inputTitle = ref<string>('')
 const inputDescription = ref<string>('')
 const subtasks = ref<Subtask[]>([])
 const newSubtaskTitle = ref<string>('')
+
+const resetForm = () => {
+  inputTitle.value = ''
+  inputDescription.value = ''
+  subtasks.value = []
+  newSubtaskTitle.value = ''
+}
+
+watch(
+  () => props.editingTask,
+  (newVal) => {
+    if (newVal) {
+      inputTitle.value = newVal.title
+      inputDescription.value = newVal.description || ''
+      subtasks.value = newVal.subtasks ? [...newVal.subtasks] : []
+    } else {
+      resetForm()
+    }
+  },
+  { immediate: true },
+)
 
 const handleSubmit = () => {
   const task: Omit<Task, 'id' | 'status'> = {
@@ -29,11 +51,7 @@ const handleSubmit = () => {
   }
 
   emit('createTask', task)
-
-  inputTitle.value = ''
-  inputDescription.value = ''
-  subtasks.value = []
-  newSubtaskTitle.value = ''
+  resetForm()
 }
 
 const addSubtask = () => {
@@ -60,7 +78,7 @@ const toggleSubtask = (index: number) => {
 
 <template>
   <div class="task-form">
-    <h2>Créer une nouvelle tâche</h2>
+    <h2>{{ props.editingTask ? 'Modifier la tâche' : 'Créer une nouvelle tâche' }}</h2>
 
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
@@ -117,7 +135,9 @@ const toggleSubtask = (index: number) => {
 
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-      <button type="submit" class="btn btn-primary">Ajouter une Tâche</button>
+      <button type="submit" class="btn btn-primary">
+        {{ props.editingTask ? 'Mettre à jour' : 'Ajouter une Tâche' }}
+      </button>
     </form>
   </div>
 </template>
