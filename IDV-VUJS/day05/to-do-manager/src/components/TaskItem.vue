@@ -155,11 +155,11 @@ const cancelEditingSubtask = () => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.task-item.task-to\ do {
+.task-item.task-to.do {
   border-left: 4px solid #95a5a6;
 }
 
-.task-item.task-in\ progress {
+.task-item.task-in.progress {
   border-left: 4px solid #f39c12;
 }
 
@@ -188,12 +188,12 @@ h3 {
   text-transform: capitalize;
 }
 
-.status-to\ do {
+.status-to.do {
   background: #ecf0f1;
   color: #7f8c8d;
 }
 
-.status-in\ progress {
+.status-in.progress {
   background: #fef3c7;
   color: #d97706;
 }
