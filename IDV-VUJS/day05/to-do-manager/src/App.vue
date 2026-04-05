@@ -4,7 +4,7 @@ import AppFooter from '@/components/AppFooter.vue'
 import TaskForm from '@/components/TaskForm.vue'
 import TaskList from '@/components/TaskList.vue'
 
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { Task } from '@/types/Task'
 import { Status } from '@/types/Task'
 
@@ -13,6 +13,7 @@ const errorMessage = ref<string>('')
 const nextId = ref<number>(1)
 const showFormModal = ref<boolean>(false)
 const editingTask = ref<Task | null>(null)
+const selectedFilter = ref<Status | 'all'>('all')
 
 const STORAGE_KEY = 'tasks'
 
@@ -22,6 +23,13 @@ const handleEscape = (e: KeyboardEvent) => {
     editingTask.value = null
   }
 }
+
+const filteredTasks = computed(() => {
+  if (selectedFilter.value === 'all') {
+    return tasks.value
+  }
+  return tasks.value.filter((task) => task.status === selectedFilter.value)
+})
 
 const validateInput = (title: string): boolean => {
   errorMessage.value = ''
@@ -153,8 +161,35 @@ onUnmounted(() => {
       </button>
     </div>
 
+    <div class="filter-buttons">
+      <button
+        @click="selectedFilter = 'all'"
+        :class="['filter-btn', { active: selectedFilter === 'all' }]"
+      >
+        Toutes les tâches
+      </button>
+      <button
+        @click="selectedFilter = Status.TODO"
+        :class="['filter-btn', { active: selectedFilter === Status.TODO }]"
+      >
+        À faire
+      </button>
+      <button
+        @click="selectedFilter = Status.IN_PROGRESS"
+        :class="['filter-btn', { active: selectedFilter === Status.IN_PROGRESS }]"
+      >
+        En cours
+      </button>
+      <button
+        @click="selectedFilter = Status.DONE"
+        :class="['filter-btn', { active: selectedFilter === Status.DONE }]"
+      >
+        Terminé
+      </button>
+    </div>
+
     <TaskList
-      :tasks="tasks"
+      :tasks="filteredTasks"
       @updateStatus="updateTaskStatus"
       @deleteTask="deleteTask"
       @editTask="startEditTask"
@@ -288,6 +323,38 @@ main {
   }
 }
 
+.filter-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filter-btn {
+  padding: 0.65rem 1.25rem;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  color: #666;
+}
+
+.filter-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.filter-btn.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
 @media (max-width: 768px) {
   main {
     margin: 1rem auto;
@@ -298,6 +365,15 @@ main {
     width: 90%;
     max-width: 100%;
     margin: 1rem;
+  }
+
+  .filter-buttons {
+    gap: 0.5rem;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
   }
 }
 </style>
